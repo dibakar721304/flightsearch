@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.validation.ConstraintViolationException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -47,7 +48,7 @@ public class FlightSearchControllerAdvice extends ResponseEntityExceptionHandler
             HttpStatus status, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDate.now());
+        body.put("timestamp", LocalDateTime.now());
         body.put("status", status.value());
 
         List<String> errors = methodArgumentNotValidException.getBindingResult()
@@ -59,5 +60,15 @@ public class FlightSearchControllerAdvice extends ResponseEntityExceptionHandler
         body.put("errors", errors);
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(ConstraintViolationException.class)
+    public final ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException ex,
+                                                                         WebRequest request) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        List<String> errors = ex.getConstraintViolations().parallelStream().map(e -> e.getMessage())
+                .collect(Collectors.toList());
+        body.put("errors", errors);
+    return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 }
