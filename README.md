@@ -14,4 +14,4 @@ Backend APIs to search flights.
    
       http://localhost:9999/flight/search?origin=AMS&destination=BOM  ( method GET)
       
-4) To access swagger ui : http://localhost:9999/openapi/swagger-ui/index.html
+4) To access swagger ui in browser : http://localhost:9999/openapi/swagger-ui/index.html
