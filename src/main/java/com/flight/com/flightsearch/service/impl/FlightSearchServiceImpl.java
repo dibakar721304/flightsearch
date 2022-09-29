@@ -24,23 +24,25 @@ public class FlightSearchServiceImpl implements FlightSearchService {
 
     @Override
     public List<Flight> getAllFlightsByOriginAndDestination(String origin, String destination) throws FlightSearchApplicationException {
-        List<Flight> flightListByOrginAndDestination;
+        List<Flight> flightListByOriginAndDestination;
         try {
-            flightListByOrginAndDestination = flightRepository.findFlightByOriginAndDestination(origin, destination).stream().map(flight -> modelMapper.map(flight, Flight.class)).collect(Collectors.toList());
+            LOGGER.info("Fetching flight details by origin and destination");
+            flightListByOriginAndDestination = flightRepository.findFlightByOriginAndDestination(origin, destination).stream().map(flight -> modelMapper.map(flight, Flight.class)).collect(Collectors.toList());
         } catch (Exception exception) {
-            LOGGER.info("Failed to get flights by origin and destination");
+            LOGGER.error("Failed to get flights by origin and destination");
             throw new FlightSearchApplicationException("Failed to get flights by origin and destination ", exception);
         }
-        return flightListByOrginAndDestination;
+        return flightListByOriginAndDestination;
     }
 
     @Override
     public List<Flight> getAllFlights() throws FlightSearchApplicationException {
         List<Flight> allFlightList;
         try {
+            LOGGER.info("Fetching flight details");
             allFlightList = flightRepository.findAll().stream().map(flight -> modelMapper.map(flight, Flight.class)).collect(Collectors.toList());
         } catch (Exception exception) {
-            LOGGER.info("Failed to get all flights");
+            LOGGER.error("Failed to get all flights");
             throw new FlightSearchApplicationException("Failed to get all flights", exception);
         }
         return allFlightList;

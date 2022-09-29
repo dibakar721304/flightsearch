@@ -38,6 +38,7 @@ public class FlightSearchController {
 
     @Autowired
     FlightSearchService flightSearchService;
+
     @Operation(summary = "Get flight details by origin and destination",
             description = "Get flight details by origin and destination")
     @ApiResponses(value = {
@@ -51,18 +52,22 @@ public class FlightSearchController {
                     content = {@Content(examples = {@ExampleObject(value = "")})})})
     @GetMapping(value = "/search")
     public ResponseEntity<List<Flight>> getAllFlightsByOriginAndDestination(@NotBlank @NotEmpty @NotNull @Valid @RequestParam String origin, @NotBlank @NotEmpty @NotNull @Valid @RequestParam String destination) {
-        List<Flight> response = flightSearchService.getAllFlightsByOriginAndDestination(origin, destination);
-        if (response == null) {
+        List<Flight> flightListByOriginAndDestination;
+        try {
+            LOGGER.info(String.format("Fetching flights from origin %s, destination %s", origin, destination));
+            flightListByOriginAndDestination = flightSearchService.getAllFlightsByOriginAndDestination(origin, destination);
+        } catch (FlightSearchApplicationException flightSearchApplicationException) {
             LOGGER.error(String.format("Failed to get flights from origin %s, destination %s", origin, destination));
-            throw new FlightSearchApplicationException(String.format("Failed to get flights from origin %s, destination %s", origin, destination));
+            throw new FlightSearchApplicationException(String.format("Failed to get flights from origin %s, destination %s", origin, destination), flightSearchApplicationException);
         }
-        if (response.size() == 0) {
+        if (flightListByOriginAndDestination.size() == 0) {
             LOGGER.error(String.format("There are no flights from origin %s, destination %s", origin, destination));
             throw new FlightNotFoundException(String.format("There are no flights from origin %s, destination %s", origin, destination));
         }
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(flightListByOriginAndDestination);
 
     }
+
     @Operation(summary = "Get flight details",
             description = "Get flight details")
     @ApiResponses(value = {
@@ -76,16 +81,18 @@ public class FlightSearchController {
                     content = {@Content(examples = {@ExampleObject(value = "")})})})
     @GetMapping(value = "/allFlights")
     public ResponseEntity<List<Flight>> getAllFlights() throws FlightSearchApplicationException, FlightNotFoundException {
-        List<Flight> response = flightSearchService.getAllFlights();
-
-        if (response == null) {
+        List<Flight> allFlightList;
+        try {
+            LOGGER.info("Fetching flight details");
+            allFlightList = flightSearchService.getAllFlights();
+        } catch (FlightSearchApplicationException flightSearchApplicationException) {
             LOGGER.error("Failed to get flights");
-            throw new FlightSearchApplicationException("Failed to get flights ");
+            throw new FlightSearchApplicationException("Failed to get flights ", flightSearchApplicationException);
         }
-        if (response.size() == 0) {
+        if (allFlightList.size() == 0) {
             LOGGER.error("There are no flights available");
             throw new FlightNotFoundException("There are no flights available");
         }
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(allFlightList);
     }
 }

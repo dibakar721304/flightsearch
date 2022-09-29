@@ -1,14 +1,13 @@
 package com.flight.com.flightsearch.controller;
 
 import com.flight.com.flightsearch.constant.FlightSearchApplicationConstants;
-import com.flight.com.flightsearch.dao.FlightRepository;
+import com.flight.com.flightsearch.exception.FlightSearchApplicationException;
 import com.flight.com.flightsearch.model.Flight;
 import com.flight.com.flightsearch.model.Price;
 import com.flight.com.flightsearch.service.FlightSearchService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -37,11 +36,6 @@ public class FlightSearchControllerTest {
     @MockBean
     private FlightSearchService flightSearchService;
 
-    @MockBean
-    private FlightRepository flightRepository;
-
-    @MockBean
-    private ModelMapper modelMapper;
     @Autowired
     private MockMvc mvc;
     private Flight flight;
@@ -73,7 +67,7 @@ public class FlightSearchControllerTest {
 
     @Test
     public void testIfFlightSearchApplicationExceptionThrownWhileFetchingAllFlights() throws Exception {
-        when(flightSearchService.getAllFlights()).thenReturn(null);
+        when(flightSearchService.getAllFlights()).thenThrow(new FlightSearchApplicationException("Testing exception for getAllFlights method"));
         this.mvc.perform(MockMvcRequestBuilders
                         .get("/flight/allFlights")
                 )
@@ -108,7 +102,7 @@ public class FlightSearchControllerTest {
 
     @Test
     public void testIfFlightSearchApplicationExceptionThrownWhileFetchingAllFlightsByOriginAndDestination() throws Exception {
-        when(flightSearchService.getAllFlightsByOriginAndDestination(anyString(), anyString())).thenReturn(null);
+        when(flightSearchService.getAllFlightsByOriginAndDestination(anyString(), anyString())).thenThrow(new FlightSearchApplicationException("Testing exception for getAllFlightsByOriginAndDestination method"));
         mvc.perform(MockMvcRequestBuilders
                         .get("/flight/search").queryParam("MAA", "BOM")
                         .param("origin", "MAA")
