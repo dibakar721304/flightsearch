@@ -5,6 +5,7 @@ Backend APIs to search flights.
 1) Checkout the repository in IDE and do 'mvn clean install' in terminal.
 2) Execute the main method of FlightSearchApplication class
 3) Access below end points from postman :
+
    a) To get all flights
    
       http://localhost:9999/flight/allFlights ( method GET)
