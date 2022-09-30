@@ -3,7 +3,6 @@ package com.flight.com.flightsearch.controller;
 import com.flight.com.flightsearch.constant.FlightSearchApplicationConstants;
 import com.flight.com.flightsearch.exception.FlightSearchApplicationException;
 import com.flight.com.flightsearch.model.Flight;
-import com.flight.com.flightsearch.model.Price;
 import com.flight.com.flightsearch.service.FlightSearchService;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +22,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -45,7 +45,7 @@ public class FlightSearchControllerTest {
     public void setUp() {
         flight =
                 Flight.builder().id(null).flightNumber("E101_test").origin("MAA").destination("BOM").departureTime(LocalTime.parse("11:00")).arrivalTime(LocalTime.parse("16:00"))
-                        .price(Price.builder().price(new BigDecimal(100)).currency(FlightSearchApplicationConstants.CURRENCY_UNIT).build()).build();
+                        .price(new BigDecimal(100)).currency(FlightSearchApplicationConstants.CURRENCY_UNIT).build();
         flightList.add(flight);
     }
 
@@ -123,6 +123,65 @@ public class FlightSearchControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is4xxClientError());
+
+    }
+    @Test
+    public void testIfFlightsFetchedByFlightName() throws Exception {
+        when(flightSearchService.getByFlightNumber(anyString())).thenReturn(flightList);
+        this.mvc.perform(MockMvcRequestBuilders
+                        .get("/flight/filterByFlightName").param("flightNumber","E101_test")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+    }
+    @Test
+    public void testIfFlightSearchApplicationExceptionThrownWhileFilteringByFlightName() throws Exception {
+        when(flightSearchService.getByFlightNumber(anyString())).thenThrow(new FlightSearchApplicationException("Testing exception for getAllFlights method"));
+        this.mvc.perform(MockMvcRequestBuilders.get("/flight/filterByFlightName").param("flightNumber","E101_test")
+                )
+                .andDo(print())
+                .andExpect(status().is5xxServerError());
+
+    }
+
+    @Test
+    public void testIfFlightNotFoundExceptionThrownWhileFilteringByFlightName() throws Exception {
+        when(flightSearchService.getByFlightNumber(anyString())).thenReturn(new ArrayList<Flight>());
+        this.mvc.perform(MockMvcRequestBuilders.get("/flight/filterByFlightName").param("flightNumber","E101_test")
+                )
+                .andDo(print())
+                .andExpect(status().is4xxClientError());
+
+    }
+    @Test
+    public void testIfFlightsFetchedByOrigin() throws Exception {
+        when(flightSearchService.getByOrigin(anyString())).thenReturn(flightList);
+        this.mvc.perform(MockMvcRequestBuilders
+                        .get("/flight/filterByOrigin").param("origin","MAA")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+    }
+    @Test
+    public void testIfFlightsFetchedByDestination() throws Exception {
+        when(flightSearchService.getByDestination(anyString())).thenReturn(flightList);
+        this.mvc.perform(MockMvcRequestBuilders
+                        .get("/flight/filterByDestination").param("destination","BOM")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+    }
+    @Test
+    public void testIfFlightsFetchedByPrice() throws Exception {
+        when(flightSearchService.getByPrice(any())).thenReturn(flightList);
+        this.mvc.perform(MockMvcRequestBuilders
+                        .get("/flight/filterByPrice").param("price", "100")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
 
     }
 }

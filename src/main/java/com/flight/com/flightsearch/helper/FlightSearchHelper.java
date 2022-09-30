@@ -3,7 +3,6 @@ package com.flight.com.flightsearch.helper;
 import com.flight.com.flightsearch.constant.FlightSearchApplicationConstants;
 import com.flight.com.flightsearch.exception.FlightSearchApplicationException;
 import com.flight.com.flightsearch.model.Flight;
-import com.flight.com.flightsearch.model.Price;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +50,7 @@ public class FlightSearchHelper {
                 destination(metadata[2]).
                 departureTime(LocalTime.parse(metadata[3])).
                 arrivalTime(LocalTime.parse(metadata[4])).
-                price(Price.builder().price(new BigDecimal(metadata[5])).currency(FlightSearchApplicationConstants.CURRENCY_UNIT).build()).build();
+                price(new BigDecimal(metadata[5])).currency(FlightSearchApplicationConstants.CURRENCY_UNIT).build();
     }
 
 }

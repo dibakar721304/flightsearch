@@ -4,7 +4,6 @@ import com.flight.com.flightsearch.constant.FlightSearchApplicationConstants;
 import com.flight.com.flightsearch.dao.FlightRepository;
 import com.flight.com.flightsearch.exception.FlightSearchApplicationException;
 import com.flight.com.flightsearch.model.Flight;
-import com.flight.com.flightsearch.model.Price;
 import com.flight.com.flightsearch.service.impl.FlightSearchServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +21,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -39,7 +39,7 @@ public class FlightSearchServiceImplTest {
     @BeforeEach
     public void setUp() {
         flight = Flight.builder().id(null).flightNumber("E101_test").origin("MAA").destination("BOM").departureTime(LocalTime.parse("11:00")).arrivalTime(LocalTime.parse("16:00"))
-                .price(Price.builder().price(new BigDecimal(100)).currency(FlightSearchApplicationConstants.CURRENCY_UNIT).build()).build();
+                .price(new BigDecimal(100)).currency(FlightSearchApplicationConstants.CURRENCY_UNIT).build();
         flightList.add(flight);
         flightRepository.saveAll(flightList);
     }
@@ -84,5 +84,41 @@ public class FlightSearchServiceImplTest {
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
+    }
+    @Test
+    void testIfAllFlightDetailsAreFetchedFilteredByFlightName() {
+        when(flightRepository.findByFlightNumber(anyString())).thenReturn(flightList);
+        assertThat(flightSearchService.getByFlightNumber("E101_test")).isNotNull();
+        Assertions.assertEquals(flightSearchService.getByFlightNumber("E101_test").size(), 1);
+    }
+    @Test
+    void testIfAllFlightDetailsAreFetchedFilteredByOrigin() {
+        when(flightRepository.findByOrigin(anyString())).thenReturn(flightList);
+        assertThat(flightSearchService.getByOrigin("MAA")).isNotNull();
+        Assertions.assertEquals(flightSearchService.getByOrigin("MAA").size(), 1);
+    }
+    @Test
+    void testIfAllFlightDetailsAreFetchedFilteredByDestination() {
+        when(flightRepository.findByDestination(anyString())).thenReturn(flightList);
+        assertThat(flightSearchService.getByDestination("BOM")).isNotNull();
+        Assertions.assertEquals(flightSearchService.getByDestination("BOM").size(), 1);
+    }
+    @Test
+    void testIfAllFlightDetailsAreFetchedFilteredByArrivalTime() {
+        when(flightRepository.findByArrivalTime(any())).thenReturn(flightList);
+        assertThat(flightSearchService.getByArrivalTime(LocalTime.of(16,00))).isNotNull();
+        Assertions.assertEquals(flightSearchService.getByArrivalTime(LocalTime.of(16,00)).size(), 1);
+    }
+    @Test
+    void testIfAllFlightDetailsAreFetchedFilteredByDepartureTime() {
+        when(flightRepository.findByDepartureTime(any())).thenReturn(flightList);
+        assertThat(flightSearchService.getByDepartureTime(LocalTime.of(11,00))).isNotNull();
+        Assertions.assertEquals(flightSearchService.getByDepartureTime(LocalTime.of(11,00)).size(), 1);
+    }
+    @Test
+    void testIfAllFlightDetailsAreFetchedFilteredByPrice() {
+        when(flightRepository.findByPrice(any())).thenReturn(flightList);
+        assertThat(flightSearchService.getByPrice(new BigDecimal(100))).isNotNull();
+        Assertions.assertEquals(flightSearchService.getByPrice(new BigDecimal(100)).size(), 1);
     }
 }

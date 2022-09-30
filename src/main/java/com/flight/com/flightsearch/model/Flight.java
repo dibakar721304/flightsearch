@@ -4,6 +4,7 @@ package com.flight.com.flightsearch.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalTime;
 
 
@@ -30,8 +31,9 @@ public class Flight {
     private String destination;
     private LocalTime departureTime;
     private LocalTime arrivalTime;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "price_id", referencedColumnName = "id")
-    private Price price;
+//    @OneToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "price_id", referencedColumnName = "id")
+    private BigDecimal price;
+    private String currency;
 
 }
