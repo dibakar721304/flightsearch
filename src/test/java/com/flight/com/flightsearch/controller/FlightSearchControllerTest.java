@@ -126,19 +126,19 @@ public class FlightSearchControllerTest {
 
     }
     @Test
-    public void testIfFlightsFetchedByFlightName() throws Exception {
+    public void testIfFlightsFetchedByFlightNumber() throws Exception {
         when(flightSearchService.getByFlightNumber(anyString())).thenReturn(flightList);
         this.mvc.perform(MockMvcRequestBuilders
-                        .get("/flight/filterByFlightName").param("flightNumber","E101_test")
+                        .get("/flight/filterByFlightNumber").param("flightNumber","E101_test")
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
 
     }
     @Test
-    public void testIfFlightSearchApplicationExceptionThrownWhileFilteringByFlightName() throws Exception {
+    public void testIfFlightSearchApplicationExceptionThrownWhileFilteringByFlightNumber() throws Exception {
         when(flightSearchService.getByFlightNumber(anyString())).thenThrow(new FlightSearchApplicationException("Testing exception for getAllFlights method"));
-        this.mvc.perform(MockMvcRequestBuilders.get("/flight/filterByFlightName").param("flightNumber","E101_test")
+        this.mvc.perform(MockMvcRequestBuilders.get("/flight/filterByFlightNumber").param("flightNumber","E101_test")
                 )
                 .andDo(print())
                 .andExpect(status().is5xxServerError());
@@ -146,9 +146,9 @@ public class FlightSearchControllerTest {
     }
 
     @Test
-    public void testIfFlightNotFoundExceptionThrownWhileFilteringByFlightName() throws Exception {
+    public void testIfFlightNotFoundExceptionThrownWhileFilteringByFlightNumber() throws Exception {
         when(flightSearchService.getByFlightNumber(anyString())).thenReturn(new ArrayList<Flight>());
-        this.mvc.perform(MockMvcRequestBuilders.get("/flight/filterByFlightName").param("flightNumber","E101_test")
+        this.mvc.perform(MockMvcRequestBuilders.get("/flight/filterByFlightNumber").param("flightNumber","E101_test")
                 )
                 .andDo(print())
                 .andExpect(status().is4xxClientError());

@@ -138,7 +138,7 @@ public class FlightSearchController {
             @ApiResponse(responseCode = "404",
                     description = "${api.response-codes.notFound.desc}",
                     content = {@Content(examples = {@ExampleObject(value = "")})})})
-    @GetMapping("/filterByFlightName")
+    @GetMapping("/filterByFlightNumber")
     public ResponseEntity<List<Flight>> getFlightsByFlightNumber(@NotBlank @NotEmpty @NotNull @Valid @RequestParam String flightNumber) {
 
         List<Flight> allFlightList;

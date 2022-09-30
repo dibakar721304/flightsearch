@@ -86,7 +86,7 @@ public class FlightSearchServiceImplTest {
         assertTrue(actualMessage.contains(expectedMessage));
     }
     @Test
-    void testIfAllFlightDetailsAreFetchedFilteredByFlightName() {
+    void testIfAllFlightDetailsAreFetchedFilteredByFlightNumber() {
         when(flightRepository.findByFlightNumber(anyString())).thenReturn(flightList);
         assertThat(flightSearchService.getByFlightNumber("E101_test")).isNotNull();
         Assertions.assertEquals(flightSearchService.getByFlightNumber("E101_test").size(), 1);
